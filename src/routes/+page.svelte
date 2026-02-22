@@ -20,9 +20,13 @@
 
 	function update(event: MouseEvent) {
 		event.preventDefault();
-		const key = (event.target as HTMLButtonElement).getAttribute(
+		var key = (event.target as HTMLButtonElement).getAttribute(
 			"data-key",
 		);
+
+		if (key === " ") {
+			key = "\u00A0";
+		}
 
 		if (key === "backspace") {
 			currentGuess = currentGuess.slice(0, -1);
@@ -38,7 +42,7 @@
 	}
 </script>
 
-<div id="screen">{currentGuess}</div>
+<p id="screen">{currentGuess}</p>
 
 <div class="controls">
 	<div class="keyboard">
@@ -87,7 +91,7 @@
 		margin-right: auto;
 		background-color: black;
 		color: green;
-		white-space: pre;
+		overflow-wrap: break-word;
 	}
 
 	.controls {
