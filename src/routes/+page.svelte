@@ -136,7 +136,8 @@
 	}
 
 	.keyboard button[data-key="shift"],
-	.keyboard button[data-key="backspace"] {
+	.keyboard button[data-key="backspace"],
+	.keyboard button[data-key="caps lock"] {
 		position: absolute;
 		bottom: 0;
 		width: calc(1.5 * var(--size));
@@ -148,6 +149,9 @@
 
 	.keyboard button[data-key="shift"] {
 		right: calc(50% + 3.5 * var(--size) + 0.8rem);
+	}
+	.keyboard button[data-key="caps lock"] {
+		right: calc(50% + 5.5 * var(--size) + 0.8rem);
 	}
 
 	.keyboard button[data-key=" "] {
