@@ -40,47 +40,24 @@
 			shift = false;
 		}
 	}
+
+	function click(event: MouseEvent) {
+		event.preventDefault();
+		let r=Math.sqrt((event.clientX*event.clientX)+(event.clientY*event.clientY))
+		let theta=Math.atan2(event.clientY,event.clientX);
+		console.log(r,theta);
+	}
 </script>
 
 <p id="screen">{currentGuess}</p>
 
 <div class="controls">
 	<div class="keyboard">
-		<button
-			onclick={update}
-			data-key="backspace"
-			name="key"
-			value="backspace"
-		>
-			back
-		</button>
-		<button onclick={update} data-key="shift" name="key" value="shift">
-			shift
-		</button>
-		<button
-			onclick={update}
-			data-key="caps lock"
-			name="key"
-			value="caps lock"
-		>
-			caps lock
-		</button>
+	<button class="circle" onclick={click} >
+a
+	</button>
 
-		{#each ["qwertyuiop", "asdfghjkl", "zxcvbnm", " "] as row (row)}
-			<div class="row">
-				{#each row as letter, index (index)}
-					<button
-						onclick={update}
-						data-key={shift || capslock ? letter.toUpperCase() : letter}
-						disabled={false}
-						name="key"
-						value={letter}
-					>
-						{shift || capslock ? letter.toUpperCase() : letter}
-					</button>
-				{/each}
-			</div>
-		{/each}
+	
 	</div>
 </div>
 
@@ -117,51 +94,12 @@
 		flex: 1;
 	}
 
-	.keyboard button,
-	.keyboard button:disabled {
-		--size: min(8vw, 4vh, 40px);
-		background-color: white;
-		color: black;
-		width: var(--size);
-		border: none;
-		border-radius: 2px;
-		font-size: calc(var(--size) * 0.5);
-		margin: 0;
-	}
+	.circle{
+		width: 200pt;
+		aspect-ratio: 1;
+		background-color: red;
+		margin: auto;
+		border-radius: 100%;
 
-	.keyboard button:focus {
-		background: var(--color-theme-1);
-		color: white;
-		outline: none;
-	}
-
-	.keyboard button[data-key="shift"],
-	.keyboard button[data-key="backspace"],
-	.keyboard button[data-key="caps lock"] {
-		position: absolute;
-		bottom: 0;
-		width: calc(1.5 * var(--size));
-		height: calc(1 / 3 * (100% - 2 * var(--gap)));
-		text-transform: uppercase;
-		font-size: calc(0.3 * var(--size));
-		padding-top: calc(0.15 * var(--size));
-	}
-
-	.keyboard button[data-key="shift"] {
-		right: calc(50% + 3.5 * var(--size) + 0.8rem);
-	}
-	.keyboard button[data-key="caps lock"] {
-		right: calc(50% + 5.5 * var(--size) + 0.8rem);
-	}
-
-	.keyboard button[data-key=" "] {
-		width: calc(var(--size) * 5);
-	}
-	.keyboard button[data-key="backspace"] {
-		left: calc(50% + 3.5 * var(--size) + 0.8rem);
-	}
-
-	.keyboard button[data-key="enter"]:disabled {
-		opacity: 0.5;
 	}
 </style>
