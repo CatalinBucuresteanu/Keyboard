@@ -4,7 +4,8 @@
 	import { confetti } from "@neoconfetti/svelte";
 	import { MediaQuery } from "svelte/reactivity";
 
-	import type { ActionData, PageData } from "./$types";
+	 import type { ActionData, PageData } from "./$types";
+    // this line is causig an error import { ComSpec } from "$env/static/private";
 
 	interface Props {
 		data: PageData;
@@ -18,11 +19,9 @@
 	let shift = $state(false);
 	let capslock = $state(false);
 
-	function update(event: MouseEvent) {
-		event.preventDefault();
-		var key = (event.target as HTMLButtonElement).getAttribute(
-			"data-key",
-		);
+	function update(letter:string) {
+		
+		var key =letter;
 
 		if (key === " ") {
 			key = "\u00A0";
@@ -43,21 +42,52 @@
 
 	function click(event: MouseEvent) {
 		event.preventDefault();
-		let r=Math.sqrt((event.clientX*event.clientX)+(event.clientY*event.clientY))
-		let theta=Math.atan2(event.clientY,event.clientX);
-		console.log(r,theta);
-	}
+		let elem=document.querySelector(".circle");
+		let rect=elem.getBoundingClientRect();
+		let centerX=rect.left+rect.width/2;
+		let centerY=rect.top+rect.height/2;
+		let r=Math.sqrt(((event.clientX-centerX)*(event.clientX-centerX))+((event.clientY-centerY)*(event.clientY-centerY)));
+		let theta=Math.atan2(event.clientY-centerY,event.clientX-centerX);
+		let Quadrant_size=(2*Math.PI)/40;
+		if(theta<0) theta+=2*Math.PI;
+        let Letter_index=Math.floor(theta/Quadrant_size);
+	    if(Letter_index<=34&&Letter_index>=10)
+		 console.log(Letter_index)
+}
+function update1(letter:string){
+console.log(letter);
+}
+
+function calcx(letter) {
+	var letters ="zyxwvutsrqponmlkjihgfedcba";
+    var letter_index = letters.indexOf(letter)+10
+    var theta = ((2*Math.PI) / 40) * letter_index;
+   var length = 100;// (radius of the circle)
+   var x=length*Math.cos(theta);
+   return x;
+}
+function calcy(letter) {
+	var letters ="zyxwvutsrqponmlkjihgfedcba";
+    var letter_index = letters.indexOf(letter)+10
+    var theta = ((2*Math.PI) / 40) * letter_index;
+   var length = 100;// (radius of the circle)
+   var y=length*Math.sin(theta);
+   return y;
+}
+	
 </script>
 
 <p id="screen">{currentGuess}</p>
 
 <div class="controls">
-	<div class="keyboard">
-	<button class="circle" onclick={click} >
-a
-	</button>
 
+	<div class="keyboard">
+	<button class="circle" onclick={click}>
 	
+{#each "abcdefghijklmnopqrstuvwxyz".split('') as item}
+<div onclick={() => update(item)} style="position: absolute; left:{120+calcx(item)}px; top:{120+calcy(item)}px;">{item}</div>
+{/each}
+	</button>	
 	</div>
 </div>
 
@@ -95,11 +125,13 @@ a
 	}
 
 	.circle{
+		position: relative;
 		width: 200pt;
 		aspect-ratio: 1;
 		background-color: red;
 		margin: auto;
 		border-radius: 100%;
+}
 
-	}
+
 </style>
