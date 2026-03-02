@@ -89,8 +89,8 @@
 			{#each alphabet.split("") as item}
 				<div
 					onclick={() => update(item)}
-					style="position: absolute; left:{(width / 2) +
-						calcx(item)}pt; top:{(width / 2) + calcy(item)}pt;"
+					style="transform: translate(50%, 50%);position: absolute; left:{(width*0.4) +
+						calcx(item)}pt; top:{(width*0.4) + calcy(item)}pt;"
 				>
 					{item}
 				</div>
