@@ -10,7 +10,7 @@
 		data: PageData;
 		form: ActionData;
 	}
-	let { width=200,data, form = $bindable() }: Props = $props();
+	let { width = 200, data, form = $bindable() }: Props = $props();
 
 	/** The current guess */
 	let currentGuess = $state("");
@@ -36,7 +36,7 @@
 			shift = false;
 		}
 	}
-     let elem;
+	let elem;
 	function click(event: MouseEvent) {
 		event.preventDefault();
 		let rect = elem.getBoundingClientRect();
@@ -59,7 +59,7 @@
 		console.log(letter);
 	}
 	let length = 100;
-	let alphabet="zyxwvutsrqponmlkjihgfedcba";
+	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 	function calcx(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + 10;
@@ -80,12 +80,17 @@
 
 <div class="controls">
 	<div class="keyboard">
-		<button   style="width: {width}pt;"    class="circle" bind:this={elem} onclick={click}>
+		<button
+			style="width: {width}pt;"
+			class="circle"
+			bind:this={elem}
+			onclick={click}
+		>
 			{#each alphabet.split("") as item}
 				<div
 					onclick={() => update(item)}
-					style="position: absolute; left:{width/2 +
-						calcx(item)}px; top:{width/2 + calcy(item)}px;"
+					style="position: absolute; left:{(width / 2) +
+						calcx(item)}pt; top:{(width / 2) + calcy(item)}pt;"
 				>
 					{item}
 				</div>
@@ -97,7 +102,7 @@
 <style>
 	#screen {
 		height: 50vh;
-		width: 500px;
+		width: 500pt;
 		margin-left: auto;
 		margin-right: auto;
 		background-color: black;
