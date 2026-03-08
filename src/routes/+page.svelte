@@ -66,15 +66,15 @@ if (Letter_index < 26) {
 	function calcx(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + rotation;
-		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5)
-		var x = width * 0.5 * Math.cos(theta);
+		var theta = ((2 * Math.PI) / 40) *(letter_index + 0.5)
+		var x = width * 0.4 * Math.cos(theta);
 		return x;
 	}
 	function calcy(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + rotation;
 		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5)
-		var y = width * 0.5 * Math.sin(theta);
+		var y = width * 0.4 * Math.sin(theta);
 		return y;
 	}
 </script>
