@@ -10,7 +10,7 @@
 		data: PageData;
 		form: ActionData;
 	}
-	let { width = 200, data, form = $bindable() }: Props = $props();
+	let { rotation=10,width = 200, data, form = $bindable() }: Props = $props();
 
 	/** The current guess */
 	let currentGuess = $state("");
@@ -53,25 +53,28 @@
 		let Quadrant_size = (2 * Math.PI) / 40;
 		if (theta < 0) theta += 2 * Math.PI;
 		let Letter_index = Math.floor(theta / Quadrant_size);
-		if (Letter_index <= 34 && Letter_index >= 10) console.log(Letter_index);
+		Letter_index = Letter_index - rotation;
+if (Letter_index < 0) {
+   Letter_index += 40;
+}
+if (Letter_index < 26) {
+    update(alphabet[Letter_index])
+}
 	}
-	function update1(letter: string) {
-		console.log(letter);
-	}
-	let length = 100;
+	
 	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 	function calcx(letter) {
 		var letters = alphabet;
-		var letter_index = letters.indexOf(letter) + 10;
-		var theta = ((2 * Math.PI) / 40) * letter_index;
-		var x = length * Math.cos(theta);
+		var letter_index = letters.indexOf(letter) + rotation;
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5)
+		var x = width * 0.5 * Math.cos(theta);
 		return x;
 	}
 	function calcy(letter) {
 		var letters = alphabet;
-		var letter_index = letters.indexOf(letter) + 10;
-		var theta = ((2 * Math.PI) / 40) * letter_index;
-		var y = length * Math.sin(theta);
+		var letter_index = letters.indexOf(letter) + rotation;
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5)
+		var y = width * 0.5 * Math.sin(theta);
 		return y;
 	}
 </script>
@@ -81,16 +84,15 @@
 <div class="controls">
 	<div class="keyboard">
 		<button
-			style="width: {width}pt;"
+			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
 			onclick={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
-					onclick={() => update(item)}
-					style="transform: translate(50%, 50%);position: absolute; left:{(width*0.4) +
-						calcx(item)}pt; top:{(width*0.4) + calcy(item)}pt;"
+					style="transform: translate(-50%, -50%);position: absolute; left:{(width * 0.5) +
+						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
 				>
 					{item}
 				</div>
