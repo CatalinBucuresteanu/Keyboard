@@ -10,13 +10,16 @@
 		data: PageData;
 		form: ActionData;
 	}
-	let { rotation=10,width = 200, data, form = $bindable() }: Props = $props();
+	let { rotation = 10, width = 200, data, form = $bindable() }: Props = $props();
+
+	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 
 	/** The current guess */
 	let currentGuess = $state("");
 
 	let shift = $state(false);
 	let capslock = $state(false);
+	
 	function update(letter: string) {
 		var key = letter;
 
@@ -53,27 +56,30 @@
 		let Quadrant_size = (2 * Math.PI) / 40;
 		if (theta < 0) theta += 2 * Math.PI;
 		let Letter_index = Math.floor(theta / Quadrant_size);
-		Letter_index = Letter_index - rotation;
-if (Letter_index < 0) {
-   Letter_index += 40;
-}
-if (Letter_index < 26) {
-    update(alphabet[Letter_index])
-}
+
+		// This rotates the keyboard by 'rotation' letters
+		Letter_index -= rotation;
+		if (Letter_index < 0) {
+			Letter_index += 40;
+		}
+		if (Letter_index >= 26) {
+			update(" ");
+		} else {
+			update(alphabet[Letter_index]);
+		}
 	}
-	
-	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
+
 	function calcx(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + rotation;
-		var theta = ((2 * Math.PI) / 40) *(letter_index + 0.5)
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5);
 		var x = width * 0.4 * Math.cos(theta);
 		return x;
 	}
 	function calcy(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + rotation;
-		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5)
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5);
 		var y = width * 0.4 * Math.sin(theta);
 		return y;
 	}
@@ -84,7 +90,7 @@ if (Letter_index < 26) {
 <div class="controls">
 	<div class="keyboard">
 		<button
-			style="width: {width}pt; padding:0"
+			style="width: {width}pt; padding: 0px;"
 			class="circle"
 			bind:this={elem}
 			onclick={click}
