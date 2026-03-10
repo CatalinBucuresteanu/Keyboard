@@ -107,6 +107,7 @@ function highlight(event: PointerEvent) {
 			class="circle"
 			bind:this={elem}
 			onpointermove={highlight}
+			onpointerup={click}
 		>
 			{#each alphabet.split("") as item}
 				<div class:highlight_effect={alphabet[highlight_index]===item} 	
