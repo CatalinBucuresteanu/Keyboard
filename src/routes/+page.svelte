@@ -10,12 +10,12 @@
 		data: PageData;
 		form: ActionData;
 	}
-	let { rotation=10,width = 200, data, form = $bindable() }: Props = $props();
+	let {highlight_index,rotation=10,width = 200, data, form = $bindable() }: Props = $props();
 
 	/** The current guess */
 	let currentGuess = $state("");
-
 	let shift = $state(false);
+		let action = $state(false);
 	let capslock = $state(false);
 	function update(letter: string) {
 		var key = letter;
@@ -37,7 +37,7 @@
 		}
 	}
 	let elem;
-	function click(event: MouseEvent) {
+	function click(event: PointerEvent) {
 		event.preventDefault();
 		let rect = elem.getBoundingClientRect();
 		let centerX = rect.left + rect.width / 2;
@@ -61,7 +61,26 @@ if (Letter_index < 26) {
     update(alphabet[Letter_index])
 }
 	}
-	
+
+function highlight(event: PointerEvent) {
+		event.preventDefault();
+		let rect = elem.getBoundingClientRect();
+		let centerX = rect.left + rect.width / 2;
+		let centerY = rect.top + rect.height / 2;
+		let r = Math.sqrt(
+			(event.clientX - centerX) * (event.clientX - centerX) +
+				(event.clientY - centerY) * (event.clientY - centerY),
+		);
+		let theta = Math.atan2(
+			event.clientY - centerY,
+			event.clientX - centerX,
+		);
+		let Quadrant_size = (2 * Math.PI) / 40;
+		if (theta < 0) theta += 2 * Math.PI;
+		highlight_index = Math.floor(theta / Quadrant_size);
+		highlight_index = highlight_index - rotation;
+		console.log(highlight_index);
+	}	
 	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 	function calcx(letter) {
 		var letters = alphabet;
@@ -87,10 +106,10 @@ if (Letter_index < 26) {
 			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
-			onclick={click}
+			onpointermove={highlight}
 		>
 			{#each alphabet.split("") as item}
-				<div
+				<div class:highlight_effect={alphabet[highlight_index]===item} 	
 					style="transform: translate(-50%, -50%);position: absolute; left:{(width * 0.5) +
 						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
 				>
@@ -140,5 +159,8 @@ if (Letter_index < 26) {
 		background-color: red;
 		margin: auto;
 		border-radius: 100%;
+	}
+	.highlight_effect{
+		background-color: blue;
 	}
 </style>
