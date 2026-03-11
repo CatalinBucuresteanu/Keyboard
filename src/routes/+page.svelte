@@ -132,8 +132,8 @@
 <style>
 	#screen {
 		height: 50vh;
-		width: 500pt;
-		margin-left:000 auto;
+		width: 50%;
+		margin-left: auto;
 		margin-right: auto;
 		background-color: black;
 		color: green;
@@ -147,8 +147,8 @@
 	}
 
 	.keyboard {
-		touch-action: none;
 		--gap: 0.2rem;
+		touch-action: none;
 		position: relative;
 		display: flex;
 		flex-direction: column;
