@@ -112,8 +112,8 @@
 			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
-			on:pointermove|preventDefault={highlight} 
-			on:pointerup|preventDefault={click}
+			on:pointermove={highlight} 
+			on:pointerup={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
@@ -147,6 +147,7 @@
 	}
 
 	.keyboard {
+		touch-action: none;
 		--gap: 0.2rem;
 		position: relative;
 		display: flex;
