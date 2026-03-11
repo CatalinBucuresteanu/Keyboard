@@ -112,8 +112,8 @@
 			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
-			on:pointermove={highlight} 
-			on:pointerup={click}
+			on:pointermove|preventDefault={highlight} 
+			on:pointerup|preventDefault={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
@@ -132,8 +132,8 @@
 <style>
 	#screen {
 		height: 50vh;
-		max-width: 500pt;
-		margin-left: auto;
+		width: 500pt;
+		margin-left:000 auto;
 		margin-right: auto;
 		background-color: black;
 		color: green;
