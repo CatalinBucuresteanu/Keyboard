@@ -132,7 +132,8 @@
 <style>
 	#screen {
 		height: 50vh;
-		width: 50%;
+		width: 80%;
+         max-width: 800px;
 		margin-left: auto;
 		margin-right: auto;
 		background-color: black;
@@ -171,6 +172,6 @@
 		border-radius: 100%;
 	}
 	.highlight_effect {
-		background-color: blue;
+		background-color: pink;
 	}
 </style>
