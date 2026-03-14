@@ -121,7 +121,7 @@
 			class="circle"
 			bind:this={elem}
 			on:pointermove={highlight} 
-			on:mousemove={click}
+			on:pointermove={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
@@ -157,7 +157,7 @@
 
 	.keyboard {
 		--gap: 0.2rem;
-		touch-action: none;
+		
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -175,6 +175,7 @@
 	.circle {
 		position: relative;
 		aspect-ratio: 1;
+		touch-action: none;
 		background-color: red;
 		margin: auto;
 		border-radius: 100%;
