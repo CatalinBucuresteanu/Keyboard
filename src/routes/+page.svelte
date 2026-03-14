@@ -42,7 +42,8 @@
 			shift = false;
 		}
 	}
-	let elem;
+	let points=[0,0]
+	let elem,toggle=1;
 	function click(event: PointerEvent) {
 		event.preventDefault();
 		let rect = elem.getBoundingClientRect();
@@ -60,11 +61,19 @@
 		if (theta < 0) theta += 2 * Math.PI;
 		let Letter_index = Math.floor(theta / Quadrant_size);
 		Letter_index = Letter_index - rotation;
+		points.push(r)
+		let point=points[points.length-1]-points[points.length-2];
+
+		
 		if (Letter_index < 0) {
 			Letter_index += 40;
 		}
-		if (Letter_index < 26) {
+		if (Letter_index < 26&&point<0&&toggle===1) {
 			update(alphabet[Letter_index]);
+			toggle=-1;
+		}
+		else if(point>0&&toggle===-1){
+			toggle=1;
 		}
 	}
 
@@ -85,7 +94,6 @@
 		if (theta < 0) theta += 2 * Math.PI;
 		highlight_index = Math.floor(theta / Quadrant_size);
 		highlight_index = highlight_index - rotation;
-		console.log(highlight_index);
 	}
 	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 	function calcx(letter) {
@@ -113,7 +121,7 @@
 			class="circle"
 			bind:this={elem}
 			on:pointermove={highlight} 
-			on:pointerup={click}
+			on:mousemove={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
