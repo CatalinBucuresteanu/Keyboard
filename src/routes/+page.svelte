@@ -43,7 +43,7 @@
 		}
 	}
 	let last_r=0;
-	let elem,toggle=1;
+	let elem,canType=1;
 	function click(event: PointerEvent) {
 		event.preventDefault();
 		let rect = elem.getBoundingClientRect();
@@ -63,18 +63,27 @@
 		Letter_index = Letter_index - rotation;
 		let delta_r=r-last_r;
 
+		console.log(delta_r);
+		if(delta_r<-10){
+			if(canType){
+				if(Letter_index<26&&Letter_index>0){
+					update(alphabet[Letter_index])
+				}
+				else if(Letter_index<0){
+				 Letter_index+=40;
+				}
+				canType=false;
+			}
+			last_r=r;
+		}
+		else if(delta_r>0){
+			last_r=r;
+			canType=true;
+		}
+		else if (delta_r < 0 && canType == false) {
+    last_r = r
+}
 		
-		if (Letter_index < 0) {
-			Letter_index += 40;
-		}
-		if (Letter_index < 26&&delta_r<0&&toggle===1) {
-			update(alphabet[Letter_index]);
-			toggle=-1;
-		}
-		else if(delta_r>0&&toggle===-1){
-			toggle=1;
-		}
-		last_r=r;
 	}
 
 	function highlight(event: PointerEvent) {
