@@ -42,7 +42,7 @@
 			shift = false;
 		}
 	}
-	let points=[0,0]
+	let last_r=0;
 	let elem,toggle=1;
 	function click(event: PointerEvent) {
 		event.preventDefault();
@@ -61,20 +61,20 @@
 		if (theta < 0) theta += 2 * Math.PI;
 		let Letter_index = Math.floor(theta / Quadrant_size);
 		Letter_index = Letter_index - rotation;
-		points.push(r)
-		let point=points[points.length-1]-points[points.length-2];
+		let delta_r=r-last_r;
 
 		
 		if (Letter_index < 0) {
 			Letter_index += 40;
 		}
-		if (Letter_index < 26&&point<0&&toggle===1) {
+		if (Letter_index < 26&&delta_r<0&&toggle===1) {
 			update(alphabet[Letter_index]);
 			toggle=-1;
 		}
-		else if(point>0&&toggle===-1){
+		else if(delta_r>0&&toggle===-1){
 			toggle=1;
 		}
+		last_r=r;
 	}
 
 	function highlight(event: PointerEvent) {
