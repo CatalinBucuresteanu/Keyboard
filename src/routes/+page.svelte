@@ -64,7 +64,7 @@
 		let delta_r=r-last_r;
 
 		console.log(delta_r);
-		if(delta_r<-15){
+		if(delta_r<-20){
 			if(canType){
 				if(Letter_index<26&&Letter_index>0){
 					
