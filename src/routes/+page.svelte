@@ -43,7 +43,7 @@
 		}
 	}
 	let last_r=0;
-	let elem,canType=1;
+	let elem,canType=true;
 	function click(event: PointerEvent) {
 		event.preventDefault();
 		let rect = elem.getBoundingClientRect();
@@ -64,9 +64,10 @@
 		let delta_r=r-last_r;
 
 		console.log(delta_r);
-		if(delta_r<-10){
+		if(delta_r<-15){
 			if(canType){
 				if(Letter_index<26&&Letter_index>0){
+					
 					update(alphabet[Letter_index])
 				}
 				else if(Letter_index<0){
