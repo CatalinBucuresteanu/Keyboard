@@ -42,7 +42,7 @@
 			shift = false;
 		}
 	}
-	let last_r=0;
+	let last_r=0,old_letter_index=0;
 	let elem,canType=true;
 	function click(event: PointerEvent) {
 		event.preventDefault();
@@ -60,13 +60,16 @@
 		let Quadrant_size = (2 * Math.PI) / 40;
 		if (theta < 0) theta += 2 * Math.PI;
 		let Letter_index = Math.floor(theta / Quadrant_size);
+		
 		Letter_index = Letter_index - rotation;
+		  if(Letter_index!=old_letter_index){
+			last_r=0;
+		}
 		let delta_r=r-last_r;
-
-		console.log(delta_r);
+		console.log(delta_r)
 		if(delta_r<-20){
 			if(canType){
-				if(Letter_index<26&&Letter_index>0){
+				if(Letter_index<26&&Letter_index>=0){
 					
 					update(alphabet[Letter_index])
 				}
@@ -83,7 +86,8 @@
 		}
 		else if (delta_r < 0 && canType == false) {
     last_r = r
-}
+} 
+old_letter_index=Letter_index;
 		
 	}
 
