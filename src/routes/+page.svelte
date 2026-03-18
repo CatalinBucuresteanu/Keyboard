@@ -11,7 +11,7 @@
 		form: ActionData;
 	}
 	let {
-		highlight_index,
+		Letter_index,
 		rotation = 10,
 		width = 200,
 		data,
@@ -23,6 +23,7 @@
 	let shift = $state(false);
 	let action = $state(false);
 	let capslock = $state(false);
+	let isHighlighted=$state(false);
 	function update(letter: string) {
 		var key = letter;
 
@@ -59,7 +60,7 @@
 		);
 		let Quadrant_size = (2 * Math.PI) / 40;
 		if (theta < 0) theta += 2 * Math.PI;
-		let Letter_index = Math.floor(theta / Quadrant_size);
+		Letter_index = Math.floor(theta / Quadrant_size);
 		
 		Letter_index = Letter_index - rotation;
 		  if(Letter_index!=old_letter_index){
@@ -83,32 +84,19 @@
 		else if(delta_r>0){
 			last_r=r;
 			canType=true;
+			isHighlighted=true;
 		}
 		else if (delta_r < 0 && canType == false) {
     last_r = r
 } 
+else if(delta_r<0){
+	isHighlighted=false;
+}
 old_letter_index=Letter_index;
 		
 	}
 
-	function highlight(event: PointerEvent) {
-		event.preventDefault();
-		let rect = elem.getBoundingClientRect();
-		let centerX = rect.left + rect.width / 2;
-		let centerY = rect.top + rect.height / 2;
-		let r = Math.sqrt(
-			(event.clientX - centerX) * (event.clientX - centerX) +
-				(event.clientY - centerY) * (event.clientY - centerY),
-		);
-		let theta = Math.atan2(
-			event.clientY - centerY,
-			event.clientX - centerX,
-		);
-		let Quadrant_size = (2 * Math.PI) / 40;
-		if (theta < 0) theta += 2 * Math.PI;
-		highlight_index = Math.floor(theta / Quadrant_size);
-		highlight_index = highlight_index - rotation;
-	}
+	
 	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
 	function calcx(letter) {
 		var letters = alphabet;
@@ -134,12 +122,11 @@ old_letter_index=Letter_index;
 			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
-			on:pointermove={highlight} 
 			on:pointermove={click}
 		>
 			{#each alphabet.split("") as item}
 				<div
-					class:highlight_effect={alphabet[highlight_index] === item}
+					class:highlight_effect={alphabet[Letter_index] === item&&isHighlighted===true}
 					style="transform: translate(-50%, -50%);position: absolute; left:{width *
 						0.5 +
 						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
@@ -147,6 +134,7 @@ old_letter_index=Letter_index;
 					{item}
 				</div>
 			{/each}
+			
 		</button>
 	</div>
 </div>
