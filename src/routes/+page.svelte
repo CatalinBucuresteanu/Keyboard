@@ -21,17 +21,17 @@
 	/** The current guess */
 	let currentGuess = $state("");
 	let shift = $state(false);
-	let action = $state(false);
 	let capslock = $state(false);
-	let isHighlighted=$state(false);
+	let canType = $state(false);
+
 	function update(letter: string) {
 		var key = letter;
 
-		if (key === " ") {
+		if (key === "-") {
 			key = "\u00A0";
 		}
 
-		if (key === "backspace") {
+		if (key === "<") {
 			currentGuess = currentGuess.slice(0, -1);
 			if (form?.badGuess) form.badGuess = false;
 		} else if (key === "shift") {
@@ -43,10 +43,17 @@
 			shift = false;
 		}
 	}
-	let last_r=0,old_letter_index=0;
-	let elem,canType=true;
-	function click(event: PointerEvent) {
+
+	let last_r = 0;
+	let elem: HTMLButtonElement;
+
+	function capturePointerMove(event: PointerEvent) {
 		event.preventDefault();
+		if (event.buttons !== 1) {
+			last_r = 0;
+			canType = false;
+			return;
+		}
 		let rect = elem.getBoundingClientRect();
 		let centerX = rect.left + rect.width / 2;
 		let centerY = rect.top + rect.height / 2;
@@ -60,44 +67,30 @@
 		);
 		let Quadrant_size = (2 * Math.PI) / 40;
 		if (theta < 0) theta += 2 * Math.PI;
-		Letter_index = Math.floor(theta / Quadrant_size);
-		
-		Letter_index = Letter_index - rotation;
-		  if(Letter_index!=old_letter_index){
-			last_r=0;
-		}
-		let delta_r=r-last_r;
-		console.log(delta_r)
-		if(delta_r<-20){
-			if(canType){
-				if(Letter_index<26&&Letter_index>=0){
-					
-					update(alphabet[Letter_index])
+
+		let delta_r = r - last_r;
+		console.log(delta_r);
+		if (delta_r < -10 && r < 50) {
+			if (canType) {
+				if (Letter_index < 28 && Letter_index >= 0) {
+					update(alphabet[Letter_index]);
+				} else if (Letter_index < 0) {
+					Letter_index += 40;
 				}
-				else if(Letter_index<0){
-				 Letter_index+=40;
-				}
-				canType=false;
+				canType = false;
 			}
-			last_r=r;
+			last_r = r;
+		} else if (delta_r > 0 || r > 50) {
+			last_r = r;
+			canType = true;
+			Letter_index = Math.floor(theta / Quadrant_size);
+			Letter_index = Letter_index - rotation;
+		} else if (delta_r < 0 && canType == false) {
+			last_r = r;
 		}
-		else if(delta_r>0){
-			last_r=r;
-			canType=true;
-			isHighlighted=true;
-		}
-		else if (delta_r < 0 && canType == false) {
-    last_r = r
-} 
-else if(delta_r<0){
-	isHighlighted=false;
-}
-old_letter_index=Letter_index;
-		
 	}
 
-	
-	let alphabet = "zyxwvutsrqponmlkjihgfedcba";
+	let alphabet = "zyxwvutsrqponmlkjihgfedcba-<";
 	function calcx(letter) {
 		var letters = alphabet;
 		var letter_index = letters.indexOf(letter) + rotation;
@@ -122,11 +115,12 @@ old_letter_index=Letter_index;
 			style="width: {width}pt; padding:0"
 			class="circle"
 			bind:this={elem}
-			on:pointermove={click}
+			on:pointermove={capturePointerMove}
+			on:pointerup={capturePointerMove}
 		>
-			{#each alphabet.split("") as item}
+			{#each alphabet as item}
 				<div
-					class:highlight_effect={alphabet[Letter_index] === item&&isHighlighted===true}
+					class:highlight_effect={alphabet[Letter_index] === item && canType}
 					style="transform: translate(-50%, -50%);position: absolute; left:{width *
 						0.5 +
 						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
@@ -134,7 +128,7 @@ old_letter_index=Letter_index;
 					{item}
 				</div>
 			{/each}
-			
+			<div class="circle" style="width: 100pt; border: 2px dotted white;"></div>
 		</button>
 	</div>
 </div>
@@ -143,7 +137,7 @@ old_letter_index=Letter_index;
 	#screen {
 		height: 50vh;
 		width: 80%;
-         max-width: 800px;
+		max-width: 800px;
 		margin-left: auto;
 		margin-right: auto;
 		background-color: black;
@@ -159,7 +153,7 @@ old_letter_index=Letter_index;
 
 	.keyboard {
 		--gap: 0.2rem;
-		
+
 		position: relative;
 		display: flex;
 		flex-direction: column;
