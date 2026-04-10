@@ -11,6 +11,7 @@
 		form: ActionData;
 	}
 	let {
+		predicted_index,
 		Letter_index,
 		rotation = 10,
 		width = 200,
@@ -43,7 +44,7 @@
 			shift = false;
 		}
 	}
-
+    let last_theta=0;
 	let last_r = 0;
 	let elem: HTMLButtonElement;
 
@@ -69,7 +70,7 @@
 		if (theta < 0) theta += 2 * Math.PI;
 
 		let delta_r = r - last_r;
-		console.log(delta_r);
+		let delta_theta = theta - last_theta;
 		if (delta_r < -10 && r < 50) {
 			if (canType) {
 				if (Letter_index < 28 && Letter_index >= 0) {
@@ -79,15 +80,22 @@
 				}
 				canType = false;
 			}
+			
 			last_r = r;
+			last_theta=theta;
 		} else if (delta_r > 0 || r > 50) {
 			last_r = r;
+			last_theta=theta;
 			canType = true;
-			Letter_index = Math.floor(theta / Quadrant_size);
+			Letter_index = Math.floor(theta / Quadrant_size)-rotation;
+		  predicted_index = Letter_index + Math.floor(delta_theta * 10 / Quadrant_size); 
 			Letter_index = Letter_index - rotation;
 		} else if (delta_r < 0 && canType == false) {
 			last_r = r;
+			last_theta=theta;
 		}
+		console.log(alphabet[predicted_index])
+	
 	}
 
 	let alphabet = "zyxwvutsrqponmlkjihgfedcba-<";
@@ -120,12 +128,13 @@
 		>
 			{#each alphabet as item}
 				<div
-					class:highlight_effect={alphabet[Letter_index] === item && canType}
+					class:highlight_effect={alphabet[predicted_index] === item && canType}
 					style="transform: translate(-50%, -50%);position: absolute; left:{width *
 						0.5 +
 						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
 				>
 					{item}
+					
 				</div>
 			{/each}
 			<div class="circle" style="width: 100pt; border: 2px dotted white;"></div>
