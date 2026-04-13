@@ -10,25 +10,29 @@
 		data: PageData;
 		form: ActionData;
 	}
-	let { data, form = $bindable() }: Props = $props();
+	let {
+		predicted_index,
+		Letter_index,
+		rotation = 10,
+		width = 200,
+		data,
+		form = $bindable(),
+	}: Props = $props();
 
 	/** The current guess */
 	let currentGuess = $state("");
-
 	let shift = $state(false);
 	let capslock = $state(false);
+	let canType = $state(false);
 
-	function update(event: MouseEvent) {
-		event.preventDefault();
-		var key = (event.target as HTMLButtonElement).getAttribute(
-			"data-key",
-		);
+	function update(letter: string) {
+		var key = letter;
 
-		if (key === " ") {
+		if (key === "-") {
 			key = "\u00A0";
 		}
 
-		if (key === "backspace") {
+		if (key === "<") {
 			currentGuess = currentGuess.slice(0, -1);
 			if (form?.badGuess) form.badGuess = false;
 		} else if (key === "shift") {
@@ -40,6 +44,75 @@
 			shift = false;
 		}
 	}
+    let last_theta=0;
+	let last_r = 0;
+	let elem: HTMLButtonElement;
+
+	function capturePointerMove(event: PointerEvent) {
+		event.preventDefault();
+		if (event.buttons !== 1) {
+			last_r = 0;
+			canType = false;
+			return;
+		}
+		let rect = elem.getBoundingClientRect();
+		let centerX = rect.left + rect.width / 2;
+		let centerY = rect.top + rect.height / 2;
+		let r = Math.sqrt(
+			(event.clientX - centerX) * (event.clientX - centerX) +
+				(event.clientY - centerY) * (event.clientY - centerY),
+		);
+		let theta = Math.atan2(
+			event.clientY - centerY,
+			event.clientX - centerX,
+		);
+		let Quadrant_size = (2 * Math.PI) / 40;
+		if (theta < 0) theta += 2 * Math.PI;
+
+		let delta_r = r - last_r;
+		let delta_theta = theta - last_theta;
+		if (delta_r < -10 && r < 50) {
+			if (canType) {
+				if (Letter_index < 28 && Letter_index >= 0) {
+					update(alphabet[Letter_index]);
+				} else if (Letter_index < 0) {
+					Letter_index += 40;
+				}
+				canType = false;
+			}
+			
+			last_r = r;
+			last_theta=theta;
+		} else if (delta_r > 0 || r > 50) {
+			last_r = r;
+			last_theta=theta;
+			canType = true;
+			Letter_index = Math.floor(theta / Quadrant_size)-rotation;
+		  predicted_index = Letter_index + Math.floor(delta_theta * 10 / Quadrant_size); 
+			Letter_index = Letter_index - rotation;
+		} else if (delta_r < 0 && canType == false) {
+			last_r = r;
+			last_theta=theta;
+		}
+		console.log(alphabet[predicted_index])
+	
+	}
+
+	let alphabet = "zyxwvutsrqponmlkjihgfedcba-<";
+	function calcx(letter) {
+		var letters = alphabet;
+		var letter_index = letters.indexOf(letter) + rotation;
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5);
+		var x = width * 0.4 * Math.cos(theta);
+		return x;
+	}
+	function calcy(letter) {
+		var letters = alphabet;
+		var letter_index = letters.indexOf(letter) + rotation;
+		var theta = ((2 * Math.PI) / 40) * (letter_index + 0.5);
+		var y = width * 0.4 * Math.sin(theta);
+		return y;
+	}
 </script>
 
 <p id="screen">{currentGuess}</p>
@@ -47,47 +120,33 @@
 <div class="controls">
 	<div class="keyboard">
 		<button
-			onclick={update}
-			data-key="backspace"
-			name="key"
-			value="backspace"
+			style="width: {width}pt; padding:0"
+			class="circle"
+			bind:this={elem}
+			on:pointermove={capturePointerMove}
+			on:pointerup={capturePointerMove}
 		>
-			back
+			{#each alphabet as item}
+				<div
+					class:highlight_effect={alphabet[predicted_index] === item && canType}
+					style="transform: translate(-50%, -50%);position: absolute; left:{width *
+						0.5 +
+						calcx(item)}pt; top:{width * 0.5 + calcy(item)}pt;"
+				>
+					{item}
+					
+				</div>
+			{/each}
+			<div class="circle" style="width: 100pt; border: 2px dotted white;"></div>
 		</button>
-		<button onclick={update} data-key="shift" name="key" value="shift">
-			shift
-		</button>
-		<button
-			onclick={update}
-			data-key="caps lock"
-			name="key"
-			value="caps lock"
-		>
-			caps lock
-		</button>
-
-		{#each ["qwertyuiop", "asdfghjkl", "zxcvbnm", " "] as row (row)}
-			<div class="row">
-				{#each row as letter, index (index)}
-					<button
-						onclick={update}
-						data-key={shift || capslock ? letter.toUpperCase() : letter}
-						disabled={false}
-						name="key"
-						value={letter}
-					>
-						{shift || capslock ? letter.toUpperCase() : letter}
-					</button>
-				{/each}
-			</div>
-		{/each}
 	</div>
 </div>
 
 <style>
 	#screen {
 		height: 50vh;
-		width: 500px;
+		width: 80%;
+		max-width: 800px;
 		margin-left: auto;
 		margin-right: auto;
 		background-color: black;
@@ -103,6 +162,7 @@
 
 	.keyboard {
 		--gap: 0.2rem;
+
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -117,51 +177,15 @@
 		flex: 1;
 	}
 
-	.keyboard button,
-	.keyboard button:disabled {
-		--size: min(8vw, 4vh, 40px);
-		background-color: white;
-		color: black;
-		width: var(--size);
-		border: none;
-		border-radius: 2px;
-		font-size: calc(var(--size) * 0.5);
-		margin: 0;
+	.circle {
+		position: relative;
+		aspect-ratio: 1;
+		touch-action: none;
+		background-color: red;
+		margin: auto;
+		border-radius: 100%;
 	}
-
-	.keyboard button:focus {
-		background: var(--color-theme-1);
-		color: white;
-		outline: none;
-	}
-
-	.keyboard button[data-key="shift"],
-	.keyboard button[data-key="backspace"],
-	.keyboard button[data-key="caps lock"] {
-		position: absolute;
-		bottom: 0;
-		width: calc(1.5 * var(--size));
-		height: calc(1 / 3 * (100% - 2 * var(--gap)));
-		text-transform: uppercase;
-		font-size: calc(0.3 * var(--size));
-		padding-top: calc(0.15 * var(--size));
-	}
-
-	.keyboard button[data-key="shift"] {
-		right: calc(50% + 3.5 * var(--size) + 0.8rem);
-	}
-	.keyboard button[data-key="caps lock"] {
-		right: calc(50% + 5.5 * var(--size) + 0.8rem);
-	}
-
-	.keyboard button[data-key=" "] {
-		width: calc(var(--size) * 5);
-	}
-	.keyboard button[data-key="backspace"] {
-		left: calc(50% + 3.5 * var(--size) + 0.8rem);
-	}
-
-	.keyboard button[data-key="enter"]:disabled {
-		opacity: 0.5;
+	.highlight_effect {
+		background-color: pink;
 	}
 </style>
